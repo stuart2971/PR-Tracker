@@ -1,59 +1,69 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import MainTemplate from "../Templates/MainTemplate";
-import {
-    Chart as ChartJS,
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend,
-} from "chart.js";
-import { Line } from "react-chartjs-2";
 import { useParams } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
-import { getLogs } from "../../Requests";
+import { getDashboardData } from "../../Requests";
+import ReactApexChart from "react-apexcharts";
 
-ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend
-);
-const labels = ["January", "February", "March", "April", "May", "June", "July"];
-const graphData = {
-    labels,
-    datasets: [
-        {
-            label: "Squat",
-            data: [1, 2, 3, 4],
-            borderColor: "rgb(255, 255, 255)",
-            backgroundColor: "rgba(255, 99, 132, 0.5)",
+const chartOptions = {
+    options: {
+        chart: {
+            height: 350,
+            type: "scatter",
+            zoom: {
+                type: "xy",
+            },
         },
-    ],
+        dataLabels: {
+            enabled: false,
+        },
+        grid: {
+            xaxis: {
+                lines: {
+                    show: true,
+                },
+            },
+            yaxis: {
+                lines: {
+                    show: true,
+                },
+            },
+        },
+        xaxis: {
+            type: "datetime",
+            labels: {
+                formatter: function (val) {
+                    const d = new Date(val);
+                    return (
+                        d.toLocaleString("default", {
+                            month: "long",
+                        }) +
+                        " " +
+                        d.getDate()
+                    );
+                },
+            },
+            tickAmount: 5,
+        },
+        yaxis: {
+            tickAmount: 7,
+        },
+    },
 };
 
-function Card({
-    title,
-    selected,
-    setSelected,
-    date,
-    weight,
-    reps,
-    estimatedMax,
-}) {
+function logsTo2DArray(logs) {
+    let arr = [];
+    for (let i = 0; i < logs.length; i++) {
+        arr.push([logs[i].date, Math.floor(logs[i].estimatedMax)]);
+    }
+    return arr;
+}
+function Card({ title, date, weight, reps, estimatedMax }) {
     const dateObj = new Date(date);
 
     return (
         <div
-            className={`w-1/3 m-4 h-24 rounded flex justify-center items-center flex-col border-4 border-${
-                selected === title ? "purple-700" : "gray-300"
-            }`}
-            onClick={() => setSelected(title)}
+            className={`w-1/3 m-4 h-24 rounded flex justify-center items-center flex-col`}
         >
             <h3>{title}</h3>
             {date && weight && reps && estimatedMax ? (
@@ -74,35 +84,48 @@ function Card({
     );
 }
 
-function Dashboard({ logs }) {
+function Dashboard() {
     const { userId } = useParams();
-    const { user } = useAuth0();
-    const [data, setData] = useState(logs);
+    const { user, isAuthenticated } = useAuth0();
+    const [data, setData] = useState();
     const [selected, setSelected] = useState("Squat");
-
-    const isMyData = userId === user?.sub;
-
+    const [chartData, setChartData] = useState([]);
+    function convertToGraphData(data) {
+        try {
+            setChartData([
+                {
+                    name: "Squat",
+                    data: logsTo2DArray(data.squatLogs),
+                },
+                {
+                    name: "Bench Press",
+                    data: logsTo2DArray(data.benchLogs),
+                },
+                { name: "Deadlift", data: logsTo2DArray(data.deadliftLogs) },
+            ]);
+        } catch (err) {}
+    }
     async function fetchData() {
-        // If the user is looking at someone elses logs page
-        if (!isMyData && user?.sub !== undefined) {
-            let d = await getLogs(userId);
-            console.log(
-                `This is not my data. Fetched someone else's data. userId: ${userId} userSub: ${user?.sub}`
-            );
-            console.log(d);
-            setData(d);
-        }
+        let d = await getDashboardData(userId);
+        convertToGraphData(d);
+        setData(d);
     }
     useEffect(() => {
         fetchData();
     }, []);
+    const logs = {
+        Squat: data?.squatLogs,
+        "Bench Press": data?.benchLogs,
+        Deadlift: data?.deadliftLogs,
+    };
 
     console.log({
         message: "This is from home",
         data,
-        isMyData,
         userId,
         userSub: user?.sub,
+        isAuthenticated,
+        chartData,
     });
 
     return (
@@ -112,8 +135,6 @@ function Dashboard({ logs }) {
                 <div className="w-full flex">
                     <Card
                         title="Squat"
-                        selected={selected}
-                        setSelected={setSelected}
                         weight={data?.squatMax?.weight}
                         reps={data?.squatMax?.reps}
                         estimatedMax={data?.squatMax?.estimatedMax}
@@ -121,8 +142,6 @@ function Dashboard({ logs }) {
                     />
                     <Card
                         title="Bench Press"
-                        selected={selected}
-                        setSelected={setSelected}
                         weight={data?.benchMax?.weight}
                         reps={data?.benchMax?.reps}
                         estimatedMax={data?.benchMax?.estimatedMax}
@@ -130,8 +149,6 @@ function Dashboard({ logs }) {
                     />
                     <Card
                         title="Deadlift"
-                        selected={selected}
-                        setSelected={setSelected}
                         weight={data?.deadliftMax?.weight}
                         reps={data?.deadliftMax?.reps}
                         estimatedMax={data?.deadliftMax?.estimatedMax}
@@ -139,8 +156,47 @@ function Dashboard({ logs }) {
                     />
                 </div>
             </div>
-            <Line data={graphData} />
-            {}
+            <ReactApexChart
+                options={chartOptions.options}
+                series={chartData}
+                type="scatter"
+                height={350}
+            />
+            {Object.keys(logs).map((lift) => (
+                <button
+                    className={`mx-4 px-2 py-1 border border-1 border-purple-600 rounded ${
+                        selected === lift ? "bg-purple-600" : ""
+                    }`}
+                    onClick={() => setSelected(lift)}
+                >
+                    {lift}
+                </button>
+            ))}
+            <table>
+                <tr>
+                    <th>Date</th>
+                    <th>Weight</th>
+                    <th>Reps</th>
+                    <th>Estimated Max</th>
+                </tr>
+                {logs[selected]?.length > 0 &&
+                    logs[selected].map((log) => {
+                        const d = new Date(log.date);
+                        return (
+                            <tr>
+                                <td>
+                                    {d.toLocaleString("default", {
+                                        month: "long",
+                                    })}{" "}
+                                    {d.getDate()}, {d.getFullYear()}
+                                </td>
+                                <td>{log.weight}</td>
+                                <td>{log.reps}</td>
+                                <td>{Math.floor(log.estimatedMax)}</td>
+                            </tr>
+                        );
+                    })}
+            </table>
         </MainTemplate>
     );
 }

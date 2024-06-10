@@ -36,7 +36,7 @@ function MainTemplate({ children }) {
             {/* Body Container */}
             <div className="flex flex-row w-full h-full">
                 {/* Main Body */}
-                <div className="bg-gray-500 w-4/5 pt-24">{children}</div>
+                <div className="bg-gray-200 w-4/5 pt-24">{children}</div>
                 {/* Friends List */}
                 <div className="bg-white w-1/5 pt-12 px-8">
                     <div className="flex content-center">
