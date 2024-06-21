@@ -14,7 +14,7 @@ function MainTemplate({ children }) {
     return (
         <div className="flex h-screen">
             {/* Navbar */}
-            <div className="w-full flex justify-center fixed mt-4">
+            <div className="w-full flex justify-center fixed mt-4 z-50">
                 <div
                     id="navbar"
                     className="bg-purple-700 p-4 rounded-lg text-white mt-4"
@@ -36,7 +36,7 @@ function MainTemplate({ children }) {
             {/* Body Container */}
             <div className="flex flex-row w-full h-full">
                 {/* Main Body */}
-                <div className="bg-gray-200 w-4/5 pt-24">{children}</div>
+                <div className="bg-gray-200 w-4/5 pt-24 h-full">{children}</div>
                 {/* Friends List */}
                 <div className="bg-white w-1/5 pt-12 px-8">
                     <div className="flex content-center">

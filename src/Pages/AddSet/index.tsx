@@ -4,10 +4,11 @@ import { useAuth0 } from "@auth0/auth0-react";
 
 function Card({ exercise, selected, setSelected }) {
     const isSelected = selected === exercise;
+    console.log({ isSelected });
     return (
         <div
-            className={`bg-red-300 w-1/3 text-center m-4 h-24 rounded flex justify-center items-center border-4 border-${
-                isSelected ? "purple-700" : "gray-300"
+            className={`w-1/3 text-center m-4 h-24 rounded flex justify-center items-center ${
+                isSelected ? "bg-purple-700 text-white" : ""
             }`}
             onClick={() => setSelected(exercise)}
         >
@@ -17,7 +18,7 @@ function Card({ exercise, selected, setSelected }) {
 }
 
 function AddSet() {
-    const [selected, setSelected] = useState("");
+    const [selected, setSelected] = useState("Squat");
     const [weight, setWeight] = useState(0);
     const [reps, setReps] = useState(0);
     const [error, setError] = useState("");
@@ -76,19 +77,22 @@ function AddSet() {
                         setSelected={setSelected}
                     />
                 </div>
-                <div className="flex flex-row justify-center">
+                <div className="flex flex-row justify-center items-center">
                     <input
                         type="number"
                         placeholder="Weight"
-                        value={weight}
+                        value={weight || ""}
                         onChange={(e) => setWeight(Number(e.target.value))}
+                        className="p-2"
                     />
-                    X
+                    <span className="mx-4">X</span>
+
                     <input
                         type="number"
                         placeholder="Reps"
-                        value={reps}
+                        value={reps || ""}
                         onChange={(e) => setReps(Number(e.target.value))}
+                        className="p-2"
                     />
                 </div>
                 <div className="flex justify-center mt-4">

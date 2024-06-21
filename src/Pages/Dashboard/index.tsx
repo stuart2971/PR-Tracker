@@ -62,10 +62,8 @@ function Card({ title, date, weight, reps, estimatedMax }) {
     const dateObj = new Date(date);
 
     return (
-        <div
-            className={`w-1/3 m-4 h-24 rounded flex justify-center items-center flex-col`}
-        >
-            <h3>{title}</h3>
+        <div className="w-1/3 m-4 h-24 rounded flex justify-center items-center flex-col border-2 border-purple">
+            <h2 className="font-bold">{title}</h2>
             {date && weight && reps && estimatedMax ? (
                 <>
                     <h4>{Math.round(estimatedMax)} lbs</h4>
@@ -130,8 +128,7 @@ function Dashboard() {
 
     return (
         <MainTemplate>
-            This is Home
-            <div className="flex flex-col w-full justify-center">
+            <div className="flex flex-col w-full justify-center mb-4">
                 <div className="w-full flex">
                     <Card
                         title="Squat"
@@ -162,41 +159,45 @@ function Dashboard() {
                 type="scatter"
                 height={350}
             />
-            {Object.keys(logs).map((lift) => (
-                <button
-                    className={`mx-4 px-2 py-1 border border-1 border-purple-600 rounded ${
-                        selected === lift ? "bg-purple-600" : ""
-                    }`}
-                    onClick={() => setSelected(lift)}
-                >
-                    {lift}
-                </button>
-            ))}
-            <table>
-                <tr>
-                    <th>Date</th>
-                    <th>Weight</th>
-                    <th>Reps</th>
-                    <th>Estimated Max</th>
-                </tr>
-                {logs[selected]?.length > 0 &&
-                    logs[selected].map((log) => {
-                        const d = new Date(log.date);
-                        return (
-                            <tr>
-                                <td>
-                                    {d.toLocaleString("default", {
-                                        month: "long",
-                                    })}{" "}
-                                    {d.getDate()}, {d.getFullYear()}
-                                </td>
-                                <td>{log.weight}</td>
-                                <td>{log.reps}</td>
-                                <td>{Math.floor(log.estimatedMax)}</td>
-                            </tr>
-                        );
-                    })}
-            </table>
+            <div className="flex justify-center flex-col text-center mt-4">
+                <div className="flex justify-center my-2">
+                    {Object.keys(logs).map((lift) => (
+                        <button
+                            className={`mx-4 px-2 py-1 border border-1 border-purple-600 rounded ${
+                                selected === lift ? "bg-purple-600" : ""
+                            }`}
+                            onClick={() => setSelected(lift)}
+                        >
+                            {lift}
+                        </button>
+                    ))}
+                </div>
+                <table>
+                    <tr>
+                        <th>Date</th>
+                        <th>Weight</th>
+                        <th>Reps</th>
+                        <th>Estimated Max</th>
+                    </tr>
+                    {logs[selected]?.length > 0 &&
+                        logs[selected].map((log) => {
+                            const d = new Date(log.date);
+                            return (
+                                <tr>
+                                    <td>
+                                        {d.toLocaleString("default", {
+                                            month: "long",
+                                        })}{" "}
+                                        {d.getDate()}, {d.getFullYear()}
+                                    </td>
+                                    <td>{log.weight}</td>
+                                    <td>{log.reps}</td>
+                                    <td>{Math.floor(log.estimatedMax)}</td>
+                                </tr>
+                            );
+                        })}
+                </table>
+            </div>
         </MainTemplate>
     );
 }
