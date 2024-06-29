@@ -5,6 +5,7 @@ import AddSet from "./Pages/AddSet";
 import RedirectToDashboard from "./Misc/RedirectToDashboard";
 
 function App() {
+    console.log(import.meta.env.VITE_CLIENT_ID);
     return (
         <>
             <Router>
