@@ -36,22 +36,44 @@ function MainTemplate({ children }) {
             {/* Body Container */}
             <div className="flex flex-row w-full h-full">
                 {/* Main Body */}
-                <div className="bg-gray-200 w-4/5 pt-24 h-full">{children}</div>
-                {/* Friends List */}
-                <div className="bg-white w-1/5 pt-12 px-8">
-                    <div className="flex content-center">
-                        <h2 className="font-semibold text-xl">Friends</h2>
-                        <h2 className="text-xl text-gray-400 ml-2">
-                            #{userId.substring(userId.length - 6)}
-                        </h2>
+                <div className="flex bg-gray-200 w-full pt-24 h-full px-16">
+                    {/* Friends List */}
+                    <div className="bg-white w-1/5 pt-12 px-8 rounded-3xl my-4 grid content-between py-4">
+                        <div>
+                            <div className="flex content-center">
+                                <h2 className="font-semibold text-xl">
+                                    Friends
+                                </h2>
+                                {isAuthenticated && (
+                                    <>
+                                        {" "}
+                                        <h2 className="text-xl text-gray-400 ml-2">
+                                            #
+                                            {userId.substring(
+                                                userId.length - 6
+                                            )}
+                                        </h2>
+                                        <input
+                                            type="text"
+                                            placeholder="Search"
+                                            className="outline-none mt-4 border border-1 border-gray-300 rounded-full py-1 px-2 max-w-full"
+                                        />
+                                    </>
+                                )}
+                            </div>
+
+                            {!isAuthenticated ? (
+                                <p className="my-2 text-gray-400 text-center">
+                                    Log in to see your friends
+                                </p>
+                            ) : (
+                                ""
+                            )}
+                        </div>
+                        {isAuthenticated ? <Logout /> : <Login />}
                     </div>
-                    <input
-                        type="text"
-                        placeholder="Search"
-                        className="outline-none mt-4 border border-1 border-gray-300 rounded-full py-1 px-2"
-                    />
+                    {children}
                 </div>
-                {isAuthenticated ? <Logout /> : <Login />}
             </div>
         </div>
     );

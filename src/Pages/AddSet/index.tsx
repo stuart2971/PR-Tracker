@@ -18,6 +18,7 @@ function Card({ exercise, selected, setSelected }) {
 }
 
 function AddSet() {
+    const { isAuthenticated, loginWithRedirect } = useAuth0();
     const [selected, setSelected] = useState("Squat");
     const [weight, setWeight] = useState(0);
     const [reps, setReps] = useState(0);
@@ -25,6 +26,7 @@ function AddSet() {
     const { user } = useAuth0();
 
     async function logSet() {
+        if (!isAuthenticated) loginWithRedirect();
         let errors = "";
         if (selected === "") errors += "You must choose a lift.\n";
         if (weight === 0) errors += "You must enter a weight.\n";

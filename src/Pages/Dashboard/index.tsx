@@ -128,75 +128,79 @@ function Dashboard() {
 
     return (
         <MainTemplate>
-            <div className="flex flex-col w-full justify-center mb-4">
-                <div className="w-full flex">
-                    <Card
-                        title="Squat"
-                        weight={data?.squatMax?.weight}
-                        reps={data?.squatMax?.reps}
-                        estimatedMax={data?.squatMax?.estimatedMax}
-                        date={data?.squatMax?.date}
-                    />
-                    <Card
-                        title="Bench Press"
-                        weight={data?.benchMax?.weight}
-                        reps={data?.benchMax?.reps}
-                        estimatedMax={data?.benchMax?.estimatedMax}
-                        date={data?.benchMax?.date}
-                    />
-                    <Card
-                        title="Deadlift"
-                        weight={data?.deadliftMax?.weight}
-                        reps={data?.deadliftMax?.reps}
-                        estimatedMax={data?.deadliftMax?.estimatedMax}
-                        date={data?.deadliftMax?.date}
-                    />
+            <div className="flex flex-col w-full">
+                <div className="flex flex-col w-full justify-center mb-4">
+                    <div className="w-full flex">
+                        <Card
+                            title="Squat"
+                            weight={data?.squatMax?.weight}
+                            reps={data?.squatMax?.reps}
+                            estimatedMax={data?.squatMax?.estimatedMax}
+                            date={data?.squatMax?.date}
+                        />
+                        <Card
+                            title="Bench Press"
+                            weight={data?.benchMax?.weight}
+                            reps={data?.benchMax?.reps}
+                            estimatedMax={data?.benchMax?.estimatedMax}
+                            date={data?.benchMax?.date}
+                        />
+                        <Card
+                            title="Deadlift"
+                            weight={data?.deadliftMax?.weight}
+                            reps={data?.deadliftMax?.reps}
+                            estimatedMax={data?.deadliftMax?.estimatedMax}
+                            date={data?.deadliftMax?.date}
+                        />
+                    </div>
                 </div>
-            </div>
-            <ReactApexChart
-                options={chartOptions.options}
-                series={chartData}
-                type="scatter"
-                height={350}
-            />
-            <div className="flex justify-center flex-col text-center mt-4">
-                <div className="flex justify-center my-2">
-                    {Object.keys(logs).map((lift) => (
-                        <button
-                            className={`mx-4 px-2 py-1 border border-1 border-purple-600 rounded ${
-                                selected === lift ? "bg-purple-600" : ""
-                            }`}
-                            onClick={() => setSelected(lift)}
-                        >
-                            {lift}
-                        </button>
-                    ))}
+                <ReactApexChart
+                    options={chartOptions.options}
+                    series={chartData}
+                    type="scatter"
+                    height={350}
+                />
+                <div className="flex justify-center flex-row text-center mt-4">
+                    <div className="flex flex-col justify-center my-2">
+                        {Object.keys(logs).map((lift) => (
+                            <button
+                                className={`mx-4 my-2 px-2 py-1 border border-1 border-purple-600 rounded ${
+                                    selected === lift
+                                        ? "bg-purple-600 text-white"
+                                        : ""
+                                }`}
+                                onClick={() => setSelected(lift)}
+                            >
+                                {lift}
+                            </button>
+                        ))}
+                    </div>
+                    <table className="w-4/5">
+                        <tr>
+                            <th>Date</th>
+                            <th>Weight</th>
+                            <th>Reps</th>
+                            <th>Estimated Max</th>
+                        </tr>
+                        {logs[selected]?.length > 0 &&
+                            logs[selected].map((log) => {
+                                const d = new Date(log.date);
+                                return (
+                                    <tr>
+                                        <td>
+                                            {d.toLocaleString("default", {
+                                                month: "long",
+                                            })}{" "}
+                                            {d.getDate()}, {d.getFullYear()}
+                                        </td>
+                                        <td>{log.weight}</td>
+                                        <td>{log.reps}</td>
+                                        <td>{Math.floor(log.estimatedMax)}</td>
+                                    </tr>
+                                );
+                            })}
+                    </table>
                 </div>
-                <table>
-                    <tr>
-                        <th>Date</th>
-                        <th>Weight</th>
-                        <th>Reps</th>
-                        <th>Estimated Max</th>
-                    </tr>
-                    {logs[selected]?.length > 0 &&
-                        logs[selected].map((log) => {
-                            const d = new Date(log.date);
-                            return (
-                                <tr>
-                                    <td>
-                                        {d.toLocaleString("default", {
-                                            month: "long",
-                                        })}{" "}
-                                        {d.getDate()}, {d.getFullYear()}
-                                    </td>
-                                    <td>{log.weight}</td>
-                                    <td>{log.reps}</td>
-                                    <td>{Math.floor(log.estimatedMax)}</td>
-                                </tr>
-                            );
-                        })}
-                </table>
             </div>
         </MainTemplate>
     );
