@@ -62,7 +62,7 @@ function Card({ title, date, weight, reps, estimatedMax }) {
     const dateObj = new Date(date);
 
     return (
-        <div className="w-1/3 m-4 h-24 rounded flex justify-center items-center flex-col border-2 border-purple">
+        <div className="w-full md:w-1/3 m-4 h-24 rounded flex justify-center items-center flex-col border-2 border-purple">
             <h2 className="font-bold">{title}</h2>
             {date && weight && reps && estimatedMax ? (
                 <>
@@ -130,7 +130,7 @@ function Dashboard() {
         <MainTemplate>
             <div className="flex flex-col w-full">
                 <div className="flex flex-col w-full justify-center mb-4">
-                    <div className="w-full flex">
+                    <div className="w-full flex flex-col md:flex-row">
                         <Card
                             title="Squat"
                             weight={data?.squatMax?.weight}
@@ -160,7 +160,7 @@ function Dashboard() {
                     type="scatter"
                     height={350}
                 />
-                <div className="flex justify-center flex-row text-center mt-4">
+                <div className="flex justify-center flex-col md:flex-row text-center mt-4">
                     <div className="flex flex-col justify-center my-2">
                         {Object.keys(logs).map((lift) => (
                             <button
@@ -175,7 +175,7 @@ function Dashboard() {
                             </button>
                         ))}
                     </div>
-                    <table className="w-4/5">
+                    <table className="w-full md:w-4/5">
                         <tr>
                             <th>Date</th>
                             <th>Weight</th>
