@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import MainTemplate from "../Templates/MainTemplate";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import { getDashboardData } from "../../Requests";
 import ReactApexChart from "react-apexcharts";
@@ -62,7 +62,7 @@ function Card({ title, date, weight, reps, estimatedMax }) {
     const dateObj = new Date(date);
 
     return (
-        <div className="w-full md:w-1/3 m-4 h-24 rounded flex justify-center items-center flex-col border-2 border-purple">
+        <div className="w-full md:w-1/3 m-4 h-24 rounded flex justify-center items-center flex-col">
             <h2 className="font-bold">{title}</h2>
             {date && weight && reps && estimatedMax ? (
                 <>
@@ -130,7 +130,10 @@ function Dashboard() {
         <MainTemplate>
             <div className="flex flex-col w-full">
                 <div className="flex flex-col w-full justify-center mb-4">
-                    <div className="w-full flex flex-col md:flex-row">
+                    <div className="flex">
+                        <h1 className="text-3xl font-bold w-1/4">Maxes</h1>
+                    </div>
+                    <div className="w-full flex flex-col md:flex-row md:divide-x">
                         <Card
                             title="Squat"
                             weight={data?.squatMax?.weight}
@@ -154,52 +157,46 @@ function Dashboard() {
                         />
                     </div>
                 </div>
-                <ReactApexChart
-                    options={chartOptions.options}
-                    series={chartData}
-                    type="scatter"
-                    height={350}
-                />
-                <div className="flex justify-center flex-col md:flex-row text-center mt-4">
-                    <div className="flex flex-col justify-center my-2">
-                        {Object.keys(logs).map((lift) => (
-                            <button
-                                className={`mx-4 my-2 px-2 py-1 border border-1 border-purple-600 rounded ${
-                                    selected === lift
-                                        ? "bg-purple-600 text-white"
-                                        : ""
-                                }`}
-                                onClick={() => setSelected(lift)}
-                            >
-                                {lift}
-                            </button>
-                        ))}
+                <h1 className="text-3xl font-bold w-1/4">Logs</h1>
+
+                <div className="flex flex-col md:flex-row w-full justify-center gap-16">
+                    <ReactApexChart
+                        options={chartOptions.options}
+                        series={chartData}
+                        type="scatter"
+                        height={350}
+                        width={500}
+                        // className="w-1/4"
+                    />
+                    <div className="flex justify-center flex-col text-center mt-4 w-full md:w-2/4">
+                        <table className="w-full">
+                            <tr>
+                                <th>Date</th>
+                                <th>Weight</th>
+                                <th>Reps</th>
+                                <th>Estimated Max</th>
+                            </tr>
+                            {logs[selected]?.length > 0 &&
+                                logs[selected].map((log) => {
+                                    const d = new Date(log.date);
+                                    return (
+                                        <tr>
+                                            <td>
+                                                {d.toLocaleString("default", {
+                                                    month: "long",
+                                                })}{" "}
+                                                {d.getDate()}, {d.getFullYear()}
+                                            </td>
+                                            <td>{log.weight}</td>
+                                            <td>{log.reps}</td>
+                                            <td>
+                                                {Math.floor(log.estimatedMax)}
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                        </table>
                     </div>
-                    <table className="w-full md:w-4/5">
-                        <tr>
-                            <th>Date</th>
-                            <th>Weight</th>
-                            <th>Reps</th>
-                            <th>Estimated Max</th>
-                        </tr>
-                        {logs[selected]?.length > 0 &&
-                            logs[selected].map((log) => {
-                                const d = new Date(log.date);
-                                return (
-                                    <tr>
-                                        <td>
-                                            {d.toLocaleString("default", {
-                                                month: "long",
-                                            })}{" "}
-                                            {d.getDate()}, {d.getFullYear()}
-                                        </td>
-                                        <td>{log.weight}</td>
-                                        <td>{log.reps}</td>
-                                        <td>{Math.floor(log.estimatedMax)}</td>
-                                    </tr>
-                                );
-                            })}
-                    </table>
                 </div>
             </div>
         </MainTemplate>

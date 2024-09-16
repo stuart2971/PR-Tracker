@@ -5,72 +5,74 @@ import Logout from "../Authentication/Logout";
 import { useAuth0 } from "@auth0/auth0-react";
 
 function MainTemplate({ children }) {
+    const [expanded, setExpanded] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
+
     const { user, isAuthenticated, loginWithRedirect } = useAuth0();
     const userId = user?.sub || "";
 
     function checkIfAuthenticated() {
         if (!isAuthenticated) loginWithRedirect();
     }
-    return (
-        <div className="flex h-screen">
-            {/* Navbar */}
-            <div className="w-full flex justify-center fixed mt-4 z-50">
-                <div
-                    id="navbar"
-                    className="bg-purple-700 p-4 rounded-lg text-white mt-4"
-                >
-                    <span className="mx-2">
-                        <Link
-                            onClick={checkIfAuthenticated}
-                            to={`/dashboard/${userId}`}
-                        >
-                            Dashboard
-                        </Link>
-                    </span>
+    const handleResize = () => {
+        setIsMobile(window.innerWidth <= 768);
+    };
+    useEffect(() => {
+        handleResize();
+        window.addEventListener("resize", handleResize);
+        return () => {
+            window.removeEventListener("resize", handleResize);
+        };
+    }, []);
 
-                    <span className="mx-2">
-                        <Link to="/addset">Add Set</Link>
-                    </span>
+    return (
+        <>
+            {isMobile && (
+                <div className="bg-gray-100 rounded-full w-8 flex justify-center align-middle text-gray-500 fixed">
+                    + ADD SET
                 </div>
-            </div>
-            {/* Body Container */}
-            <div className="flex flex-row w-full h-full">
-                {/* Main Body */}
-                <div className="flex bg-gray-200 w-full pt-24 h-full px-2 md:px-16">
-                    {/* Friends List */}
-                    <div className="hidden md:grid bg-white w-1/5 pt-12 px-8 rounded-3xl my-4 content-between py-4">
-                        <div>
-                            <div className="flex content-center">
-                                <h2 className="font-semibold text-xl">
-                                    Friends
-                                </h2>
-                                {isAuthenticated && (
-                                    <h2 className="text-xl text-gray-400 ml-2">
-                                        #{userId.substring(userId.length - 6)}
-                                    </h2>
-                                )}
-                            </div>
-                            {isAuthenticated && (
-                                <input
-                                    type="text"
-                                    placeholder="Search"
-                                    className="outline-none mt-4 border border-1 border-gray-300 rounded-full py-1 px-2 w-full"
-                                />
-                            )}
-                            {!isAuthenticated ? (
-                                <p className="my-2 text-gray-400 text-center">
-                                    Log in to see your friends
-                                </p>
-                            ) : (
-                                ""
-                            )}
-                        </div>
-                        {isAuthenticated ? <Logout /> : <Login />}
+            )}
+            <div className="flex md:flex-row flex-col h-screen">
+                {/* Navbar */}
+                {isMobile && (
+                    <div className="bg-gray-100 rounded-full w-8 flex justify-center align-middle text-gray-500 fixed">
+                        + ADD SET
                     </div>
-                    {children}
+                )}
+                <div className="bg-white w-full md:w-1/6 h-full p-4 md:pt-24 flex flex-col border-r-black md:border text-center md:text-left justify-between">
+                    <div>
+                        <h1 className="text-xl md:mb-8">
+                            Powerlifting Progression Tracker
+                        </h1>
+
+                        {!isMobile && (
+                            <div className="flex flex-col">
+                                <Link
+                                    to={`/dashboard/${user?.sub}`}
+                                    className="mb-4 hover:bg-gray-100 py-2 pl-4 rounded"
+                                >
+                                    Dashboard
+                                </Link>
+                                <Link
+                                    to="/addset"
+                                    className="mb-4 hover:bg-gray-100 py-2 pl-4 rounded"
+                                >
+                                    Add Set
+                                </Link>
+                            </div>
+                        )}
+                    </div>
+                    <div>Sign out</div>
+                </div>
+                {/* Body Container */}
+                <div className="flex flex-row w-full h-full">
+                    {/* Main Body */}
+                    <div className="flex w-full pt-8 md:pt-24 h-full px-2 md:px-16">
+                        {children}
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 }
 

@@ -1,14 +1,15 @@
 import React, { useState } from "react";
 import MainTemplate from "../Templates/MainTemplate";
 import { useAuth0 } from "@auth0/auth0-react";
+import { addSet } from "../../Requests";
 
 function Card({ exercise, selected, setSelected }) {
     const isSelected = selected === exercise;
     console.log({ isSelected });
     return (
         <div
-            className={`w-1/3 text-center m-4 h-24 rounded flex justify-center items-center ${
-                isSelected ? "bg-purple-700 text-white" : ""
+            className={`w-1/3 text-center m-4 h-24 rounded flex justify-center items-center cursor-pointer text-xl ${
+                isSelected ? "bg-gray-200" : ""
             }`}
             onClick={() => setSelected(exercise)}
         >
@@ -36,19 +37,13 @@ function AddSet() {
             return;
         }
 
-        const res = await fetch("http://localhost:3000/addSet", {
-            method: "POST", // Method type
-            headers: {
-                "Content-Type": "application/json", // Content type
-            },
-            body: JSON.stringify({
-                userId: user?.sub,
-                lift: selected,
-                weight,
-                reps,
-                date: new Date(),
-                unit: "lb",
-            }), // Data to be sent in the request body
+        const res = await addSet({
+            userId: user?.sub,
+            lift: selected,
+            weight,
+            reps,
+            date: new Date(),
+            unit: "lb",
         });
 
         if (res.status === 200) {
@@ -86,6 +81,7 @@ function AddSet() {
                         value={weight || ""}
                         onChange={(e) => setWeight(Number(e.target.value))}
                         className="p-2"
+                        autoFocus
                     />
                     <span className="mx-4">X</span>
 
@@ -99,7 +95,7 @@ function AddSet() {
                 </div>
                 <div className="flex justify-center mt-4">
                     <button
-                        className="bg-purple-700 w-24 py-2 px-2 rounded text-white"
+                        className="bg-black text-white w-24 py-2 px-2 rounded"
                         onClick={logSet}
                     >
                         Log Set
