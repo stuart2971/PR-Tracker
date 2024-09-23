@@ -9,7 +9,7 @@ function Card({ exercise, selected, setSelected }) {
     return (
         <div
             className={`w-1/3 text-center m-4 h-24 rounded flex justify-center items-center cursor-pointer text-xl ${
-                isSelected ? "bg-gray-200" : ""
+                isSelected ? "bg-gray-100 underline" : ""
             }`}
             onClick={() => setSelected(exercise)}
         >

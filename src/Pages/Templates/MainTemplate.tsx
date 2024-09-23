@@ -7,6 +7,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 function MainTemplate({ children }) {
     const [expanded, setExpanded] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
+    const { logout } = useAuth0();
 
     const { user, isAuthenticated, loginWithRedirect } = useAuth0();
     const userId = user?.sub || "";
@@ -27,18 +28,7 @@ function MainTemplate({ children }) {
 
     return (
         <>
-            {isMobile && (
-                <div className="bg-gray-100 rounded-full w-8 flex justify-center align-middle text-gray-500 fixed">
-                    + ADD SET
-                </div>
-            )}
             <div className="flex md:flex-row flex-col h-screen">
-                {/* Navbar */}
-                {isMobile && (
-                    <div className="bg-gray-100 rounded-full w-8 flex justify-center align-middle text-gray-500 fixed">
-                        + ADD SET
-                    </div>
-                )}
                 <div className="bg-white w-full md:w-1/6 h-full p-4 md:pt-24 flex flex-col border-r-black md:border text-center md:text-left justify-between">
                     <div>
                         <h1 className="text-xl md:mb-8">
@@ -62,12 +52,35 @@ function MainTemplate({ children }) {
                             </div>
                         )}
                     </div>
-                    <div>Sign out</div>
+                    {isMobile && (
+                        <Link
+                            to={"/"}
+                            className="hover:bg-gray-100 py-2 pl-4 rounded"
+                            onClick={() =>
+                                logout({
+                                    returnTo: window.location.origin,
+                                })
+                            }
+                        >
+                            Add Set
+                        </Link>
+                    )}
+                    <Link
+                        to={"/"}
+                        className="mb-4 hover:bg-gray-100 md:py-2 pl-4 rounded"
+                        onClick={() =>
+                            logout({
+                                returnTo: window.location.origin,
+                            })
+                        }
+                    >
+                        Sign out
+                    </Link>
                 </div>
                 {/* Body Container */}
                 <div className="flex flex-row w-full h-full">
                     {/* Main Body */}
-                    <div className="flex w-full pt-8 md:pt-24 h-full px-2 md:px-16">
+                    <div className="flex w-full pt-4 md:pt-24 h-full px-2 md:px-16">
                         {children}
                     </div>
                 </div>

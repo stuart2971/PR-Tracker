@@ -60,7 +60,7 @@ function logsTo2DArray(logs) {
 }
 function Card({ title, date, weight, reps, estimatedMax }) {
     const dateObj = new Date(date);
-
+    console.log(estimatedMax);
     return (
         <div className="w-full md:w-1/3 m-4 h-24 rounded flex justify-center items-center flex-col">
             <h2 className="font-bold">{title}</h2>
@@ -76,7 +76,7 @@ function Card({ title, date, weight, reps, estimatedMax }) {
                     </h5>
                 </>
             ) : (
-                <>Loading...</>
+                <h5>No Data</h5>
             )}
         </div>
     );
@@ -116,6 +116,10 @@ function Dashboard() {
         "Bench Press": data?.benchLogs,
         Deadlift: data?.deadliftLogs,
     };
+    const noData =
+        logs?.Squat?.length === 0 &&
+        logs["Bench Press"]?.length === 0 &&
+        logs?.Deadlift?.length === 0;
 
     console.log({
         message: "This is from home",
@@ -124,6 +128,7 @@ function Dashboard() {
         userSub: user?.sub,
         isAuthenticated,
         chartData,
+        logs,
     });
 
     return (
@@ -131,7 +136,9 @@ function Dashboard() {
             <div className="flex flex-col w-full">
                 <div className="flex flex-col w-full justify-center mb-4">
                     <div className="flex">
-                        <h1 className="text-3xl font-bold w-1/4">Maxes</h1>
+                        <h1 className="text-3xl font-bold text-center md:text-left w-full">
+                            Maxes
+                        </h1>
                     </div>
                     <div className="w-full flex flex-col md:flex-row md:divide-x">
                         <Card
@@ -157,18 +164,24 @@ function Dashboard() {
                         />
                     </div>
                 </div>
-                <h1 className="text-3xl font-bold w-1/4">Logs</h1>
+                <h1 className="text-3xl font-bold text-center md:text-left w-full">
+                    Logs
+                </h1>
 
-                <div className="flex flex-col md:flex-row w-full justify-center gap-16">
+                <div className="flex flex-col md:flex-row w-full justify-center md:gap-16">
                     <ReactApexChart
                         options={chartOptions.options}
                         series={chartData}
                         type="scatter"
                         height={350}
-                        width={500}
+                        width={
+                            window.innerWidth < 700
+                                ? window.innerWidth * 0.85
+                                : 500
+                        }
                         // className="w-1/4"
                     />
-                    <div className="flex justify-center flex-col text-center mt-4 w-full md:w-2/4">
+                    <div className="flex justify-center flex-col text-center mt-4 md:w-2/4">
                         <table className="w-full">
                             <tr>
                                 <th>Date</th>
@@ -176,6 +189,13 @@ function Dashboard() {
                                 <th>Reps</th>
                                 <th>Estimated Max</th>
                             </tr>
+                            {noData && (
+                                <tr>
+                                    <td className="text-lg" colSpan={4}>
+                                        No Data. Add some sets
+                                    </td>
+                                </tr>
+                            )}
                             {logs[selected]?.length > 0 &&
                                 logs[selected].map((log) => {
                                     const d = new Date(log.date);
